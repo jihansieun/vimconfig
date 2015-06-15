@@ -50,7 +50,6 @@ Bundle 'klen/python-mode'
 Plugin 'EasyMotion'
 Plugin 'YankRing.vim'         
 
-
 filetype plugin indent on     " required!
 
 "====================================================
