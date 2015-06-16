@@ -50,6 +50,9 @@ Bundle 'klen/python-mode'
 Plugin 'EasyMotion'
 Plugin 'YankRing.vim'         
 
+Plugin 'rainbow.zip'		"중첩 괄호를 다른 색으로 표시
+Plugin 'surround.vim'		"ds(를 입력하여 (/)를 지우거나, cs'"작은따옴표를 큰따옴표로 바꿀 수 있습니다.
+
 filetype plugin indent on     " required!
 
 "====================================================
@@ -60,24 +63,24 @@ au BufRead,BufNewFile *.S		set ft=c
 "====================================================
 "= 기본 설정
 "====================================================
-set cindent			"들여쓰기 설정
+set cindent			" 들여쓰기 설정
 set ruler			" 화면 우측 하단에 현재 커서의 위치(줄,칸)를 보여준다.
 set number			" 줄번호 출력
 set modifiable
 set ts=4			" tab stop - tab 크기
 set sw=4			" shift width - shift 크기 조절
 set sts=4			" soft tab stop - tab 이동 크기
-set expandtab       " TAB을 space로 인식
-set nowrapscan      "검색시 문서의 끝에서 다시 처음으로 되돌아가 검색하지 않도록 지정
+set expandtab			" TAB을 space로 인식
+set nowrapscan			" 검색시 문서의 끝에서 다시 처음으로 되돌아가 검색하지 않도록 지정
+set ignorecase			" 검색시 대소문자 무시  
 set nobackup
 set visualbell
-set isfname+=$,{,}  " 'gf' 같이 cursor 가르치는 file jump시 '${project_name}/temp.txt' 변수 인식
+set isfname+=$,{,}		" 'gf' 같이 cursor 가르치는 file jump시 '${project_name}/temp.txt' 변수 인식
 set incsearch
 set printoptions=portrait:n,wrap:n,duplex:off
 set fileencodings=utf-8,euc-kr
-
-set hlsearch		" Highlight Search
-set cul             " cursorline 
+set hlsearch			" Highlight Search
+set cul				" cursorline 
 autocmd InsertLeave,InsertEnter * set cul! "show cursorline only in insert mode
 
 colorscheme desert
@@ -264,7 +267,7 @@ let g:NERDTreeDirArrows=0
 "====================================================
 "= YankRing 
 "====================================================
-let g:yankring_history_dir = '~/tmp'
+let g:yankring_history_dir = '~/.vim/tmp'
 
 "====================================================
 "= tags 설정 (cscope, ctags)

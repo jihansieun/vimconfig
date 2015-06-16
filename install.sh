@@ -7,10 +7,12 @@ fi
 
 echo "심볼릭 릭크 생성..."
 ln -sfv ~/vimconfig/vimrc ~/.vimrc
-mkdir ~/tmp
 
 echo "vundle 다운로드중..."
 git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 
 echo "vundle 설치중..."
 vi -c :BundleInstall -c :qa
+
+echo "기타 Setting..."
+mkdir ~/.vim/tmp
