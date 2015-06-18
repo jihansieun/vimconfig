@@ -88,7 +88,7 @@ Plugin 'YankRing.vim'           " :YRShow(F11) -> s, d, R
 Plugin 'EasyMotion'
 Plugin 'surround.vim'           " ys(w,W,iw,s), ds, cs, ('S' in block) brace-> ",',b,B,[,],(,),t(tags)
 Plugin 'L9'                     " l9 is a Vim-script library,  FuzzyFinder use F9
-Plugin 'FuzzyFinder'            " ,ff ,fb ,fd
+Plugin 'FuzzyFinder'            " ,ff ,fb ,fd     (Don't use "set paste",becase can't open file during FuzzyFinder work)
 Plugin 'ctags.vim'
 Plugin 'cscope.vim'
 Plugin 'cscope_macros.vim'      " <C-\> + s,g,c,t,e,f,i,d
