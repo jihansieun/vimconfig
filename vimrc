@@ -25,8 +25,9 @@ set sts=4		        " soft tab stop - tab 이동 크기
 set expandtab           " TAB을 space로 인식
 set printoptions=portrait:n,wrap:n,duplex:off
 set fileencodings=utf-8,euc-kr
-set autoindent          "자동으로 들여쓰기
-set cindent             "C 프로그램 작성 시 자동으로 들여쓰기
+"set autoindent          "자동으로 들여쓰기
+"set magic               "좀더 지능적인 들여쓰기 사용
+"set cindent             "C 프로그램 작성 시 자동으로 들여쓰기
 "------ Search
 "set smartindent
 set hlsearch	        " Highlight Search
@@ -36,9 +37,7 @@ set nowrapscan          " 검색시 문서의 끝에서 다시 처음으로 되�
 set nobackup
 set visualbell
 set history=1000
-set autowrite
 set showmatch
-set magic
 set isfname+=$,{,}      " 'gf' 같이 cursor 가르치는 file jump시 '${project_name}/temp.txt' 변수 인식 
 
 "====================================================
@@ -69,9 +68,10 @@ Plugin 'gmarik/Vundle.vim'
 " vim-scripts repos
 "------ Checked
 Plugin 'molokai'
-colorscheme molokai
-let g:molokai_original = 1
-let g:rehash256 = 1
+Plugin 'nanotech/jellybeans.vim'
+colorscheme desert
+"colorscheme molokai
+"colorscheme jellybeans
 
 Plugin 'snipMate'
 Plugin 'showmarks'		" \mt,\mm
@@ -84,26 +84,56 @@ Plugin 'The-NERD-tree'
 Plugin 'wesleyche/SrcExpl.git'
 Plugin 'taglist.vim'
 Plugin 'bufexplorer.zip'
+Plugin 'YankRing.vim'           " :YRShow(F11) -> s, d, R
 Plugin 'EasyMotion'
 Plugin 'surround.vim'           " ys(w,W,iw,s), ds, cs, ('S' in block) brace-> ",',b,B,[,],(,),t(tags)
-
-"------ TBD
 Plugin 'L9'                     " l9 is a Vim-script library,  FuzzyFinder use F9
-Plugin 'FuzzyFinder'
-
-Plugin 'DirDiff.vim'
+Plugin 'FuzzyFinder'            " ,ff ,fb ,fd
 Plugin 'ctags.vim'
 Plugin 'cscope.vim'
-"Plugin 'cscope-quickfix'
+Plugin 'cscope_macros.vim'      " <C-\> + s,g,c,t,e,f,i,d
 
-"non github repos
-"Plugin 'git://github.com/wesleyche/SrcExpl.git'
+"------ TBD
+Plugin 'DirDiff.vim'
 "Plugin 'Valloric/YouCompleteMe'  
-"Plugin 'cscope-quickfix'
 
 filetype plugin indent on     " required!
 
 "====================================================
+"= autocmd & make
+"====================================================
+"------ highlight characters past column 120
+autocmd BufEnter *.sh       setlocal ts=8 sw=8 sts=8 noexpandtab nocindent
+autocmd BufEnter Makefile   setlocal ts=8 sw=8 sts=8 noexpandtab
+autocmd BufEnter *.py       setlocal ts=8 sw=8 sts=8 noexpandtab
+
+autocmd FileType python highlight Excess ctermbg=DarkGrey guibg=Black
+autocmd FileType python match Excess /\%120v.*/
+
+"------ make
+autocmd BufReadPost quickfix    setlocal nonu
+autocmd FileType asm            set makeprg =nasm\ -f\ bin\ -o\ %<.img\ % 
+autocmd FileType c,cpp          set makeprg =gcc\ -g\ -Wall\ -O2\ %\ -o\ %<
+autocmd FileType sh             set makeprg =%
+
+" 현재 디렉토리에 Makefile이 있다면, 기존 makeprg 대신 make명령을 사용한다            
+func! Makefile_Run()                                                                  
+    let now_file_path = expand("%:h")                                                 
+    if (now_file_path == "")                                                          
+        let now_file_path = "."                                                       
+    endif                                                                             
+    if filereadable(now_file_path."/Makefile")                                        
+        exec 'lcd ' . now_file_path                                                   
+        set makeprg=make                                                              
+    endif                                                                             
+    make
+endfun
+
+"====================================================
+"= tags.vim 설정
+"====================================================
+nmap <C-F2> :copen<CR>
+
 "= 키맵핑
 "====================================================
 map <F2> v]}zf	"코드의 { 부분에서 영역 접기
@@ -116,6 +146,7 @@ map <F7> :TlistToggle<CR>
 map <F8> :SrcExplToggle<CR>
 map <F9> :NERDTreeToggle<CR>
 
+map <F10> :ccl<CR>:w!<CR>:call Makefile_Run()<CR>:botright cwindow<CR><CR>
 map <F11> :YRShow<CR>
 "nnoremap <silent> <F11> :YRShow<CR>
 
@@ -205,24 +236,14 @@ let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 "= FuzzyFinder
 "====================================================
 " 파일명 탐색시 제외할 파일 이름 패턴 지정
-"let g:fuf_coveragefile_exclude = '\v\~$|\.(o|exe|dll|bak|orig|swp|class)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
+let g:fuf_coveragefile_exclude = '\v\~$|\.(o|exe|dll|bak|orig|swp|class)$|(^|[/\\])\.(hg|git|bzr)($|[/\\])'
 map <Leader>ff <ESC>:FufCoverageFile!<CR>
 map <Leader>fb <ESC>:FufBuffer!<CR>
 map <Leader>fd <ESC>:FufDir!<CR>
 
-"let g:FuzzyFinderOptions = { 'Base':{}, 'Buffer':{}, 'File':{}, 'Dir':{}, 'MruFile':{}, 'MruCmd':{}, 'FavFile':{}, 'Tag':{}, 'TaggedFile':{}}
-"" 특정 파일 제외
-"let g:FuzzyFinderOptions.File.excluded_path = '\v\~$|\.o$|\.exe$|\.bak$|\.swp$|\.class$|\.settings$|CVS|((^|[/\\])\.[/\\]$)' 
-"" 대소문자 구분하기 (0 : 대소문자 구분, 1 : 대소문자 구분 안함)
-"let g:FuzzyFinderOptions.Base.ignore_case = 0
-"
-"map <Leader>ff <ESC>:FuzzyFinderFile \*\*\/<CR>  " 현재 디렉토리 이하에서 파일명으로 검색해서 읽어오기 
-"map <Leader>fb <ESC>:FuzzyFinderBuffer<CR>       " 버퍼 목록에서 검색해서 이동하기
-
 "====================================================
 "= tags 설정 (cscope, ctags)
 "====================================================
-"wget http://cscope.sourceforge.net/cscope_maps.vim; mv cscope_maps.vim ~/.vim/plugin 
 "set cscopetag                " use both cscope and ctag for 'ctrl-]', ':ta', and 'vim -t'
 "set csprg=/usr/bin/cscope
 
@@ -242,12 +263,10 @@ au BufEnter /* call LoadCscope()
 "현재 디렉토리부터 root 디렉토리까지 tags를 찾는다.
 set tags=tags;/
 
-
 "====================================================
 "= Check Symbol
 "====================================================
 source ~/vimconfig/plugins/checksymbol.vim
-
 
 " GUI Settings {
 
